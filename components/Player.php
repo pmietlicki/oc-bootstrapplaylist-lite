@@ -58,7 +58,7 @@ class Player extends ComponentBase
             $items = file_get_contents('http://pascal-mietlicki.fr/pmietlicki/tubelist/json/models');
             $items = json_decode($items);
             $result = array();
-            array_walk($items, function (&$value,$key) use (&$result) {
+            array_walk($items, function (&$value) use (&$result) {
                 $result[$value] = urldecode($value);
             });
             return array_merge(["" => ""],$result);
