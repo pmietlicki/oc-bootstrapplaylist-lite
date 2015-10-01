@@ -1,0 +1,101 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{% flash %}
+				  <div class="alert alert-{{ type == 'error' ? 'danger' : type }}">
+			        {{ message }}
+			        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			    </div>
+				{% endflash %}
+				{% if (playlist.URL) %}
+				<a target="_blank" href="{{ playlist.URL }}">{{ playlist.title }}</a>
+				{% elseif (playlist.title) %}
+				{{ playlist.title }}
+				{% endif %}
+			</div>
+			<div class="panel-body">
+
+				<video id="player-{{__SELF__.id}}" class="video-js vjs-default-skin" controls preload="auto" width="auto" height="auto" data-setup='{"techOrder":["youtube", "vimeo", "dailymotion", "soundcloud", "html5", "flash", "rtmp"], "src":"{{ playlist.URL }}"}'></video>
+
+			</div>
+			<div class="panel-footer" style="text-align: center;">
+				<button type="button" class="pull-left btn btn-default btn-sm unmute-video" data-bind="click: muteVideo, visible: !muted()" aria-label="Mute" title="Mute">
+					<span class="icon icon-volume-up"></span>
+				</button>
+				<button type="button" class="pull-left btn btn-default btn-sm mute-video" data-bind="click: muteVideo, visible: muted()" aria-label="Mute" title="Mute">
+					<span class="icon icon-volume-off"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm first-video" data-bind="click: playFirstVideo" aria-label="First" title="First">
+					<span class="icon icon-fast-backward"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm prev-video" data-bind="click: playPreviousVideo" aria-label="Previous" title="Previous">
+					<span class="icon icon-step-backward"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm play-video" data-bind="click: pauseVideo, visible: paused()" aria-label="Play" title="Play">
+					<span class="icon icon-play"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm pause-video" data-bind="click: pauseVideo, visible: !paused()" aria-label="Pause" title="Pause">
+					<span class="icon icon-pause"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm next-video" data-bind="click: playNextVideo" aria-label="Next" title="Next">
+					<span class="icon icon-step-forward"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm last-video" data-bind="click: playLastVideo" aria-label="Last" title="Last">
+					<span class="icon icon-fast-forward"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm" data-bind="click: shuffle" aria-label="Shuffle" title="Shuffle">
+					<span class="icon icon-random"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm repeat-video" data-bind="click: setRepeatMode, visible: !repeat()" aria-label="Repeat" title="Repeat">
+					<span class="icon icon-repeat"></span>
+				</button>
+				<button type="button" class="btn btn-default btn-sm repeat-video" data-bind="click: setRepeatMode, visible: repeat()" aria-label="Repeat" title="Repeat">
+					<span class="icon icon-repeat"></span>
+					<span class="icon icon-remove"></span>
+				</button>
+
+				<button data-original-title="Playlist" type="button" class="pull-right btn btn-default btn-sm list-video" onclick="$('#popover').toggle();" data-toggle="popover" data-placement="top" aria-label="Playlist" title="Show Playlist">
+					<span class="icon icon-list"></span>
+				</button>
+
+			</div>
+		</div>
+	</div>
+	<!--<div class="col-md-5">-->
+		<div id="popover" style="max-height: 480px; overflow-y: auto; display: hidden" class="popover fade top in" role="tooltip">
+			<div class="popover-content" data-bind="foreach: videos">
+				<div class="media" style="overflow: hidden; text-overflow: ellipsis;" data-bind="style: { background: playing() < 1 ? 'rgba(231, 230, 230, 0.37)' : 'rgba(217, 217, 217, 0.6)' }">
+					<a data-bind="attr: { title: desc }" class="pull-left popover-video-link" href="#">
+						<img class="media-object" data-bind="click: $root.playVideo, attr: { src: isrc}"></a>
+					<div class="media-body">
+						<h5 class="media-heading" data-bind="text: name"></h5>
+						<div class="btn-group" role="group">
+							<div class="btn btn-default btn-xs" data-bind="click: $root.playVideo">
+								<span class="icon icon-play"></span>
+							</div>
+							<div class="btn btn-default btn-xs" data-bind="click: $root.moveUp">
+								<span class="icon icon-arrow-up"></span>
+							</div>
+							<div class="btn btn-default btn-xs" data-bind="click: $root.moveDown">
+								<span class="icon icon-arrow-down"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!--</div>-->
+</div>
+
+<script type="text/javascript">
+window.onload=function() {
+	player = videojs('#player-{{ __SELF__.id }}');
+	{% if (playlist.json) %}
+		data = {{ playlist.json | raw}};
+	{% endif %}
+	model=new ReservationsViewModel(data);
+	ko.applyBindings(model);
+}
+
+</script>
